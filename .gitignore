@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.next/
+out/
+.env
+.env.local
+.env.*.local
+# Script local con secretos reales (Supabase/JWT/Telegram). NO subir.
+api/run-local.sh
+*.log
+.DS_Store
+.claude/
+coverage/
+.turbo/
+next-env.d.ts

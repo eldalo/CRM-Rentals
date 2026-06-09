@@ -1,0 +1,44 @@
+# Render Blueprint para la api (free tier).
+# En Render: New → Blueprint → apuntar a este repo.
+services:
+  - type: web
+    name: arriendos-backend
+    runtime: node
+    plan: free
+    rootDir: api
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: comprobantes
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID_DIEGO
+        sync: false
+      - key: TELEGRAM_CHAT_ID_ADMIN
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
+      - key: DAILY_CHECK_SECRET
+        sync: false
+      - key: API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES
+        value: 8h
+      - key: APP_TIMEZONE
+        value: America/Bogota
+      - key: FRONTEND_URL
+        sync: false
+      - key: OCR_PROVIDER
+        value: gemini
+      - key: OCR_API_KEY
+        sync: false
+      - key: OCR_MODEL
+        value: gemini-2.5-flash

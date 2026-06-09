@@ -1,0 +1,13 @@
+{
+  "name": "arriendos",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CRM - Activos GI: api NestJS + webapp NextJS + Supabase",
+  "scripts": {
+    "dev:api": "pnpm --filter api start:dev",
+    "dev:webapp": "pnpm --filter webapp dev",
+    "build": "pnpm --filter api build && pnpm --filter webapp build",
+    "test": "pnpm --filter api test"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
