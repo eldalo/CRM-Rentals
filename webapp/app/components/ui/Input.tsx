@@ -15,6 +15,12 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
    *    el número en crudo (string de dígitos) que recibe onChange.
    */
   formato?: FormatoInput;
+  /**
+   * Por defecto, en inputs de texto libre (type="text" sin formato) se impide
+   * que el valor quede TODO en mayúsculas: al escribir/pegar "DIEGO LONDONO"
+   * se corrige a "Diego Londono". Pasa `permitirMayusculas` para desactivarlo.
+   */
+  permitirMayusculas?: boolean;
 }
 
 // Tipos donde el usuario escribe → cursor de texto. El resto (date, month,
@@ -25,6 +31,12 @@ const soloDigitos = (s: string) => s.replace(/\D/g, '');
 /** Miles con punto (es-CO): "1500000" → "1.500.000". */
 const fmtMiles = (digits: string) => (digits ? Number(digits).toLocaleString('es-CO') : '');
 
+/** true si el texto tiene letras y TODAS son mayúsculas (ej. "DIEGO LONDONO"). */
+const esTodoMayus = (s: string) => /\p{Lu}/u.test(s) && !/\p{Ll}/u.test(s);
+/** Pasa a Title Case: "DIEGO LONDONO" → "Diego Londono". */
+const aTitleCase = (s: string) =>
+  s.toLowerCase().replace(/(^|\s)(\p{L})/gu, (_m, sep: string, ch: string) => sep + ch.toUpperCase());
+
 /**
  * Input reutilizable: label + campo + error/hint, con el estilo del panel.
  * Soporta `formato` celular/moneda (ver arriba). En esos casos el value en
@@ -32,11 +44,13 @@ const fmtMiles = (digits: string) => (digits ? Number(digits).toLocaleString('es
  * muestra el valor formateado.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, error, hint, icon, className = '', id, name, type = 'text', formato, value, onChange, ...rest },
+  { label, error, hint, icon, className = '', id, name, type = 'text', formato, permitirMayusculas, value, onChange, ...rest },
   ref,
 ) {
   const inputId = id ?? name;
   const cursor = TIPOS_TEXTO.includes(type) ? 'cursor-text' : 'cursor-pointer';
+  // Texto libre: type="text" sin formato. Ahí se impide el TODO-MAYÚSCULAS.
+  const esTextoLibre = !formato && type === 'text' && !permitirMayusculas;
 
   // Valor a mostrar: moneda → formateado; resto → tal cual.
   const display =
@@ -47,6 +61,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (formato === 'celular') e.target.value = soloDigitos(e.target.value).slice(0, 15);
     else if (formato === 'moneda') e.target.value = soloDigitos(e.target.value);
+    else if (esTextoLibre && esTodoMayus(e.target.value)) e.target.value = aTitleCase(e.target.value);
     onChange?.(e);
   };
 
@@ -71,7 +86,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         name={name}
         ref={ref}
         value={display}
-        onChange={formato ? handleChange : onChange}
+        onChange={handleChange}
         className={`w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 ${cursor} ${
           error
             ? 'border-red-400 focus:border-red-500 focus:ring-red-100'
