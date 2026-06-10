@@ -23,7 +23,7 @@ export class AuthService {
     // Match exacto case-insensitive: escapamos los comodines de LIKE (% _ \)
     // para que '_' en usuarios/emails no actúe como comodín ni se inyecte filtro.
     const patron = id.replace(/[\\%_]/g, (c) => `\\${c}`);
-    const cols = 'id, usuario, email, password, nombre_completo, estado, rol';
+    const cols = 'id, usuario, email, password, nombre_completo, estado, rol, puesto';
 
     // Búsqueda por usuario; si no, por email. Valores parametrizados (sin .or()).
     let usuario: any = null;
@@ -73,6 +73,7 @@ export class AuthService {
         email: usuario.email,
         nombre_completo: usuario.nombre_completo,
         rol: usuario.rol,
+        puesto: usuario.puesto ?? null,
       },
     };
   }

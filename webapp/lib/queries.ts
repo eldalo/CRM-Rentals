@@ -133,8 +133,9 @@ export function useUsuarios(page = 1) {
   });
 }
 
-// Todos los usuarios (para selects/filtros: responsable, etc.). enabled: el
-// endpoint /usuarios es admin/super_admin; un asesor pasa enabled=false (evita 403).
+// Todos los usuarios (para selects/filtros: responsable, etc.). enabled: la
+// lista /usuarios es legible por admin/superadmin; un rol 'user' pasa
+// enabled=false (evita 403).
 export function useUsuariosTodas(enabled = true) {
   return useQuery<Usuario[]>({
     queryKey: [...qk.usuarios(), 'todas'],

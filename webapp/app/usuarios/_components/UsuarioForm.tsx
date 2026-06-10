@@ -9,15 +9,24 @@ import {
   IdentificationCardIcon,
   LockIcon,
   RobotIcon,
+  BriefcaseIcon,
   ShieldCheckIcon,
   UserIcon,
   XIcon,
 } from '@phosphor-icons/react';
-import { ROL_LABEL, type ActualizarUsuario, type Rol, type Usuario } from '@/lib/api';
+import {
+  PUESTO_LABEL,
+  ROL_LABEL,
+  type ActualizarUsuario,
+  type Puesto,
+  type Rol,
+  type Usuario,
+} from '@/lib/api';
 import { useUsuariosTodas, useUsuarioMutations } from '@/lib/queries';
 import { Button, Input, Loading, Select, useDrawerClose } from '@/app/components/ui';
 
-const ROLES: Rol[] = ['asesor', 'admin', 'super_admin'];
+const ROLES: Rol[] = ['user', 'admin', 'superadmin'];
+const PUESTOS: Puesto[] = ['Administrador', 'Asesor', 'Vendedor'];
 
 /**
  * Crear (sin usuarioId) o editar (con usuarioId). En edición espera a que el
@@ -45,7 +54,8 @@ function FormInner({ usuario }: { usuario?: Usuario }) {
     email: usuario?.email ?? '',
     password: '',
     nombre_completo: usuario?.nombre_completo ?? '',
-    rol: (usuario?.rol ?? 'asesor') as Rol,
+    rol: (usuario?.rol ?? 'user') as Rol,
+    puesto: (usuario?.puesto ?? 'Asesor') as Puesto,
     telegram_bot_token: '',
     telegram_chat_id: usuario?.telegram_chat_id ?? '',
     recibe_todos_pagos: usuario?.recibe_todos_pagos ?? false,
@@ -64,6 +74,7 @@ function FormInner({ usuario }: { usuario?: Usuario }) {
         email: form.email,
         nombre_completo: form.nombre_completo,
         rol: form.rol,
+        puesto: form.puesto,
         telegram_chat_id: form.telegram_chat_id,
         recibe_todos_pagos: form.recibe_todos_pagos,
       };
@@ -104,6 +115,18 @@ function FormInner({ usuario }: { usuario?: Usuario }) {
         {ROLES.map((r) => (
           <option key={r} value={r}>
             {ROL_LABEL[r]}
+          </option>
+        ))}
+      </Select>
+      <Select
+        label="Puesto"
+        icon={<BriefcaseIcon size={16} />}
+        value={form.puesto}
+        onChange={(v) => setForm((f) => ({ ...f, puesto: v as Puesto }))}
+      >
+        {PUESTOS.map((p) => (
+          <option key={p} value={p}>
+            {PUESTO_LABEL[p]}
           </option>
         ))}
       </Select>

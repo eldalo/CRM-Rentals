@@ -14,7 +14,7 @@ import { ActualizarUsuarioDto, CrearUsuarioDto } from './dto';
 // (secretos). El token del bot es write-only: se guarda pero no se lee de vuelta;
 // al cliente solo le exponemos `tiene_bot` (booleano).
 const COLS =
-  'id, usuario, email, nombre_completo, estado, ultimo_login, rol, creado_en, actualizado_en, telegram_chat_id, recibe_todos_pagos';
+  'id, usuario, email, nombre_completo, estado, ultimo_login, rol, puesto, creado_en, actualizado_en, telegram_chat_id, recibe_todos_pagos';
 // Para consultas: incluye el token solo para derivar tiene_bot y luego se quita.
 const SELECT = `${COLS}, telegram_bot_token`;
 
@@ -52,9 +52,9 @@ export class UsuariosService {
   }
 
   async crear(dto: CrearUsuarioDto, actor: UsuarioActual) {
-    // Solo un super_admin puede crear otro super_admin.
-    if (dto.rol === 'super_admin' && actor.rol !== 'super_admin') {
-      throw new ForbiddenException('Solo un super_admin puede crear super_admins');
+    // Solo un superadmin puede crear otro superadmin.
+    if (dto.rol === 'superadmin' && actor.rol !== 'superadmin') {
+      throw new ForbiddenException('Solo un superadmin puede crear superadmins');
     }
     const password = await bcrypt.hash(dto.password, 12);
     const { data, error } = await this.supa.client
@@ -65,6 +65,7 @@ export class UsuariosService {
         password,
         nombre_completo: dto.nombre_completo,
         rol: dto.rol,
+        puesto: dto.puesto ?? null,
         estado: dto.estado ?? true,
         telegram_bot_token: dto.telegram_bot_token || null,
         telegram_chat_id: dto.telegram_chat_id || null,
@@ -79,13 +80,13 @@ export class UsuariosService {
   async actualizar(id: string, dto: ActualizarUsuarioDto, actor: UsuarioActual) {
     const actual = await this.obtener(id);
 
-    // Proteger el escalamiento de privilegios a super_admin.
-    if (dto.rol === 'super_admin' && actor.rol !== 'super_admin') {
-      throw new ForbiddenException('Solo un super_admin puede asignar el rol super_admin');
+    // Proteger el escalamiento de privilegios a superadmin.
+    if (dto.rol === 'superadmin' && actor.rol !== 'superadmin') {
+      throw new ForbiddenException('Solo un superadmin puede asignar el rol superadmin');
     }
-    // Un usuario no super_admin no puede modificar a un super_admin.
-    if (actual.rol === 'super_admin' && actor.rol !== 'super_admin') {
-      throw new ForbiddenException('No puedes modificar a un super_admin');
+    // Un usuario no superadmin no puede modificar a un superadmin.
+    if (actual.rol === 'superadmin' && actor.rol !== 'superadmin') {
+      throw new ForbiddenException('No puedes modificar a un superadmin');
     }
 
     const cambios: Record<string, unknown> = {};
@@ -93,6 +94,7 @@ export class UsuariosService {
     if (dto.email !== undefined) cambios.email = dto.email;
     if (dto.nombre_completo !== undefined) cambios.nombre_completo = dto.nombre_completo;
     if (dto.rol !== undefined) cambios.rol = dto.rol;
+    if (dto.puesto !== undefined) cambios.puesto = dto.puesto;
     if (dto.estado !== undefined) cambios.estado = dto.estado;
     if (dto.password !== undefined) cambios.password = await bcrypt.hash(dto.password, 12);
     if (dto.telegram_bot_token !== undefined) cambios.telegram_bot_token = dto.telegram_bot_token || null;
@@ -114,8 +116,8 @@ export class UsuariosService {
   /** Soft delete: los usuarios no se borran, se desactivan. */
   async desactivar(id: string, actor: UsuarioActual) {
     const actual = await this.obtener(id);
-    if (actual.rol === 'super_admin' && actor.rol !== 'super_admin') {
-      throw new ForbiddenException('No puedes desactivar a un super_admin');
+    if (actual.rol === 'superadmin' && actor.rol !== 'superadmin') {
+      throw new ForbiddenException('No puedes desactivar a un superadmin');
     }
     if (actual.id === actor.id) {
       throw new ForbiddenException('No puedes desactivarte a ti mismo');

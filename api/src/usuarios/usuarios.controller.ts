@@ -16,15 +16,19 @@ import { PaginacionQuery } from '../common/pagination';
 import { UsuariosService } from './usuarios.service';
 import { ActualizarUsuarioDto, CrearUsuarioDto } from './dto';
 
-// Gestión de usuarios: solo admin y super_admin. El JwtAuthGuard global ya
-// exige autenticación; RolesGuard aplica el filtro de rol.
+// Gestión de usuarios: las mutaciones (crear/editar/desactivar) son solo
+// superadmin; el menú "Usuarios" en la UI solo lo ve superadmin. La LISTA es
+// legible también por admin: la necesita para el select de "responsable" al
+// crear/editar apartamentos (no expone password ni token del bot).
+// El JwtAuthGuard global ya exige autenticación; RolesGuard aplica el rol.
 @Controller('usuarios')
 @UseGuards(RolesGuard)
-@Roles('super_admin', 'admin')
+@Roles('superadmin')
 export class UsuariosController {
   constructor(private readonly svc: UsuariosService) {}
 
   @Get()
+  @Roles('superadmin', 'admin')
   listar(@Query() q: PaginacionQuery) {
     return this.svc.listar(q.page);
   }

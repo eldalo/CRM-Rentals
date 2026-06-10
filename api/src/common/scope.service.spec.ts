@@ -37,9 +37,10 @@ const asesor: UsuarioActual = {
   usuario: 'tefa',
   email: 't@e.co',
   nombre_completo: 'Tefa',
-  rol: 'asesor',
+  rol: 'user',
+  puesto: 'Asesor',
 };
-const admin: UsuarioActual = { ...asesor, id: 'u-admin', rol: 'admin' };
+const admin: UsuarioActual = { ...asesor, id: 'u-admin', rol: 'admin', puesto: 'Administrador' };
 
 describe('ScopeService', () => {
   describe('esAsesor', () => {

@@ -19,17 +19,17 @@ export class UnidadesController {
     return this.svc.obtener(id);
   }
 
-  // Crear/editar/eliminar: solo admin y super_admin.
+  // Crear/editar/eliminar: solo admin y superadmin.
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin')
+  @Roles('superadmin', 'admin')
   crear(@Body() dto: CrearUnidadDto) {
     return this.svc.crear(dto);
   }
 
   @Patch(':id')
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin')
+  @Roles('superadmin', 'admin')
   actualizar(@Param('id') id: string, @Body() dto: ActualizarUnidadDto) {
     return this.svc.actualizar(id, dto);
   }
@@ -37,7 +37,7 @@ export class UnidadesController {
   // Soft delete: desactiva, no borra.
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin')
+  @Roles('superadmin', 'admin')
   desactivar(@Param('id') id: string) {
     return this.svc.desactivar(id);
   }

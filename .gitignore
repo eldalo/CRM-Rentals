@@ -13,3 +13,4 @@ api/run-local.sh
 coverage/
 .turbo/
 next-env.d.ts
+supabase/.temp/

@@ -82,7 +82,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   if (sinChrome) return <>{children}</>;
 
   // Usuarios solo lo ve el super_admin.
-  const esSuper = user?.rol === 'super_admin';
+  const esSuper = user?.rol === 'superadmin';
   const items = NAV.filter((i) => !i.soloSuper || esSuper);
 
   const esActivo = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));

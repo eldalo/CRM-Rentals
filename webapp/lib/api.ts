@@ -189,12 +189,21 @@ export const fmtCOP = (n?: number | null) =>
     : new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
 
 // ── Auth / Usuarios ──
-export type Rol = 'super_admin' | 'admin' | 'asesor';
+export type Rol = 'superadmin' | 'admin' | 'user';
 
 export const ROL_LABEL: Record<Rol, string> = {
-  super_admin: 'Super Admin',
+  superadmin: 'Superadmin',
   admin: 'Admin',
-  asesor: 'Asesor',
+  user: 'Usuario',
+};
+
+// Puesto: cargo del usuario, ORTOGONAL al rol. Vendedor aún sin lógica.
+export type Puesto = 'Administrador' | 'Asesor' | 'Vendedor';
+
+export const PUESTO_LABEL: Record<Puesto, string> = {
+  Administrador: 'Administrador',
+  Asesor: 'Asesor',
+  Vendedor: 'Vendedor',
 };
 
 export interface UsuarioActual {
@@ -203,6 +212,7 @@ export interface UsuarioActual {
   email: string;
   nombre_completo: string;
   rol: Rol;
+  puesto: Puesto | null;
 }
 
 export interface Usuario {
@@ -213,6 +223,7 @@ export interface Usuario {
   estado: boolean;
   ultimo_login: string | null;
   rol: Rol;
+  puesto: Puesto | null;
   creado_en: string;
   actualizado_en: string;
   // Bot de Telegram. El token NO se devuelve (write-only): solo tiene_bot.
@@ -227,6 +238,7 @@ export interface CrearUsuario {
   password: string;
   nombre_completo: string;
   rol: Rol;
+  puesto?: Puesto;
   estado?: boolean;
   telegram_bot_token?: string;
   telegram_chat_id?: string;

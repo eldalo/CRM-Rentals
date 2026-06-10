@@ -32,7 +32,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload): Promise<UsuarioActual> {
     const { data, error } = await this.supa.client
       .from('usuarios')
-      .select('id, usuario, email, nombre_completo, estado, rol')
+      .select('id, usuario, email, nombre_completo, estado, rol, puesto')
       .eq('id', payload.sub)
       .maybeSingle();
 
@@ -47,6 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: data.email,
       nombre_completo: data.nombre_completo,
       rol: data.rol,
+      puesto: data.puesto ?? null,
     };
   }
 }
