@@ -54,9 +54,9 @@ export default function Dashboard() {
 
   // Filtro por responsable: solo admin/super_admin (el asesor ya ve solo lo suyo).
   const { data: me } = useMe();
-  const esAdmin = !!me && me.rol !== 'asesor';
+  const esAdmin = !!me && me.rol !== 'user';
   const { data: usuarios = [] } = useUsuariosTodas(esAdmin);
-  const responsables = usuarios.filter((u) => u.estado && (u.rol === 'asesor' || u.rol === 'admin'));
+  const responsables = usuarios.filter((u) => u.estado && (u.rol === 'user' || u.rol === 'admin'));
 
   const resumen = useMemo(
     () => ({

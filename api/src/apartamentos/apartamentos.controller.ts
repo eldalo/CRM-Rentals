@@ -19,18 +19,18 @@ export class ApartamentosController {
     return this.svc.obtener(id, user);
   }
 
-  // Crear/editar: admin, super_admin y asesor (el asesor queda fijo como
+  // Crear/editar: admin, superadmin y user (el responsable queda fijo como
   // responsable y solo edita los suyos; la lógica vive en el service).
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin', 'asesor')
+  @Roles('superadmin', 'admin', 'user')
   crear(@Body() dto: CrearApartamentoDto, @CurrentUser() user: UsuarioActual) {
     return this.svc.crear(dto, user);
   }
 
   @Patch(':id')
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin', 'asesor')
+  @Roles('superadmin', 'admin', 'user')
   actualizar(
     @Param('id') id: string,
     @Body() dto: ActualizarApartamentoDto,
@@ -39,10 +39,10 @@ export class ApartamentosController {
     return this.svc.actualizar(id, dto, user);
   }
 
-  // Eliminar: solo admin y super_admin.
+  // Eliminar: solo admin y superadmin.
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin')
+  @Roles('superadmin', 'admin')
   eliminar(@Param('id') id: string) {
     return this.svc.eliminar(id);
   }

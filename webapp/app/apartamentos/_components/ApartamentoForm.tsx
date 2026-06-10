@@ -46,12 +46,23 @@ function FormInner({ apto }: { apto?: Apartamento }) {
   const { data: unidades = [] } = useUnidadesTodas();
   const { data: propietarios = [] } = usePropietariosTodas();
   const { data: me } = useMe();
-  const esAsesor = me?.rol === 'asesor';
-  // El asesor queda fijo como responsable (no elige); solo admin/super ven la
-  // lista. /usuarios es admin-only, así que solo se consulta para ellos.
-  const { data: usuarios = [] } = useUsuariosTodas(!!me && !esAsesor);
-  // Responsables elegibles: todos menos super_admin (asesores y admins activos).
-  const responsables = usuarios.filter((u) => u.estado && (u.rol === 'asesor' || u.rol === 'admin'));
+  // Rol 'user': no elige responsable. Solo admin/superadmin ven el select.
+  const esUser = me?.rol === 'user';
+  // /usuarios es superadmin-only para la lista completa; solo se consulta para
+  // quien puede elegir responsable (admin/superadmin).
+  const { data: usuarios = [] } = useUsuariosTodas(!!me && !esUser);
+  // Responsables elegibles: usuarios y admins activos (no superadmin).
+  const responsables = usuarios.filter((u) => u.estado && (u.rol === 'user' || u.rol === 'admin'));
+
+  // Nombre del encargado a mostrar (disabled) cuando el rol es 'user':
+  // - al editar: el responsable real del apto (sea o no el propio usuario);
+  // - al crear: el propio usuario, que queda asignado automáticamente.
+  const encargadoNombre = apto?.responsable
+    ? `${apto.responsable.nombre_completo} (${ROL_LABEL[apto.responsable.rol]})`
+    : me
+      ? `${me.nombre_completo} (${ROL_LABEL[me.rol]})`
+      : '';
+  const aptoEsPropio = !apto || apto.responsable_id === me?.id;
 
   const [form, setForm] = useState({
     unidad_id: apto?.unidad_id ?? '',
@@ -72,8 +83,9 @@ function FormInner({ apto }: { apto?: Apartamento }) {
       canon: Number(form.canon),
       dia_corte: Number(form.dia_corte),
       propietario_id: form.propietario_id,
-      // Asesor: se fuerza a sí mismo (el backend también lo valida).
-      responsable_id: esAsesor && me ? me.id : form.responsable_id,
+      // Rol 'user': al crear se fuerza a sí mismo; al editar conserva el
+      // responsable existente (no reasigna). El backend también lo valida.
+      responsable_id: esUser ? (editar ? form.responsable_id : me!.id) : form.responsable_id,
       asegurado: form.asegurado,
     };
     try {
@@ -133,14 +145,18 @@ function FormInner({ apto }: { apto?: Apartamento }) {
           </option>
         ))}
       </Select>
-      {esAsesor ? (
+      {esUser ? (
         <Input
           label="Responsable (a cargo)"
           icon={<IdentificationBadgeIcon size={16} />}
-          value={me ? `${me.nombre_completo} (${ROL_LABEL[me.rol]})` : ''}
+          value={encargadoNombre}
           readOnly
           disabled
-          hint="Quedas asignado automáticamente como responsable."
+          hint={
+            aptoEsPropio
+              ? 'Quedas asignado automáticamente como responsable.'
+              : 'Este apartamento está a cargo de otro responsable.'
+          }
         />
       ) : (
         <Select

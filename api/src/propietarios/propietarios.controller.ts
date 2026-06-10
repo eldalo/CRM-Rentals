@@ -19,17 +19,17 @@ export class PropietariosController {
     return this.svc.obtener(id);
   }
 
-  // Crear/editar/eliminar: solo admin y super_admin.
+  // Crear/editar/eliminar: solo admin y superadmin.
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin')
+  @Roles('superadmin', 'admin')
   crear(@Body() dto: CrearPropietarioDto) {
     return this.svc.crear(dto);
   }
 
   @Patch(':id')
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin')
+  @Roles('superadmin', 'admin')
   actualizar(@Param('id') id: string, @Body() dto: ActualizarPropietarioDto) {
     return this.svc.actualizar(id, dto);
   }
@@ -37,7 +37,7 @@ export class PropietariosController {
   // Soft delete: desactiva, no borra.
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('super_admin', 'admin')
+  @Roles('superadmin', 'admin')
   desactivar(@Param('id') id: string) {
     return this.svc.desactivar(id);
   }

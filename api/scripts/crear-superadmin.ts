@@ -51,21 +51,22 @@ async function main() {
   if (existente) {
     const { error } = await supa
       .from('usuarios')
-      .update({ email, password: hash, nombre_completo: nombre, rol: 'super_admin', estado: true })
+      .update({ email, password: hash, nombre_completo: nombre, rol: 'superadmin', puesto: 'Administrador', estado: true })
       .eq('id', existente.id);
     if (error) throw new Error(error.message);
-    console.log(`✓ super_admin actualizado: ${usuario}`);
+    console.log(`✓ superadmin actualizado: ${usuario}`);
   } else {
     const { error } = await supa.from('usuarios').insert({
       usuario,
       email,
       password: hash,
       nombre_completo: nombre,
-      rol: 'super_admin',
+      rol: 'superadmin',
+      puesto: 'Administrador',
       estado: true,
     });
     if (error) throw new Error(error.message);
-    console.log(`✓ super_admin creado: ${usuario}`);
+    console.log(`✓ superadmin creado: ${usuario}`);
   }
 }
 

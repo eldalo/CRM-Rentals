@@ -1,11 +1,14 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
+export type Puesto = 'Administrador' | 'Asesor' | 'Vendedor';
+
 export interface UsuarioActual {
   id: string;
   usuario: string;
   email: string;
   nombre_completo: string;
-  rol: 'super_admin' | 'admin' | 'asesor';
+  rol: 'superadmin' | 'admin' | 'user';
+  puesto: Puesto | null;
 }
 
 /**

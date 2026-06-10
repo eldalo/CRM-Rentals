@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { PlusIcon } from '@phosphor-icons/react';
 import { toast } from 'sonner';
-import { ROL_LABEL, type Rol, type Usuario } from '@/lib/api';
+import { PUESTO_LABEL, ROL_LABEL, type Puesto, type Rol, type Usuario } from '@/lib/api';
 import { useUsuarios, useUsuarioMutations } from '@/lib/queries';
 import { DataTable, Pagination } from '@/app/components/ui';
 
@@ -60,6 +60,20 @@ export function UsuariosListView() {
             {ROL_LABEL[c.getValue<Rol>()]}
           </span>
         ),
+      },
+      {
+        accessorKey: 'puesto',
+        header: 'Puesto',
+        cell: (c) => {
+          const p = c.getValue<Puesto | null>();
+          return p ? (
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+              {PUESTO_LABEL[p]}
+            </span>
+          ) : (
+            <span className="text-xs text-slate-400">—</span>
+          );
+        },
       },
       {
         accessorKey: 'estado',
